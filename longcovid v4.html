@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skrining Long COVID</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        
+        .form-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-column {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .question:last-child {
+            border-bottom: none;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+        }
+        
+        .domain {
+            display: inline-block;
+            background-color: var(--light);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-top: 5px;
+        }
+        
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+        }
+        
+        .option input {
+            margin-right: 5px;
+        }
+        
+        .scale-options {
+            display: flex;
+            justify-content: space-between;
+            max-width: 300px;
+        }
+        
+        .scale-label {
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        
+        .scale-value {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            display: block;
+            margin: 30px auto;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results-title {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .patient-info {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .patient-info h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .patient-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .patient-detail {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+        }
+        
+        .score-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .total-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 10px 0;
+        }
+        
+        .interpretation {
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .recommendations {
+            margin-top: 20px;
+        }
+        
+        .recommendation-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--secondary);
+            background-color: #f8f9fa;
+        }
+        
+        .domain-recommendation {
+            background-color: #e8f4fc;
+            border-left-color: var(--secondary);
+        }
+        
+        .specialist-referral {
+            background-color: #fff3cd;
+            border-left-color: var(--warning);
+        }
+        
+        .warning-message {
+            background-color: #ffeaa7;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #155724;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .scale-options {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .options {
+                flex-direction: column;
+            }
+            
+            .patient-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Skrining Long COVID</h1>
+            <p class="description">Kuesioner ini bertujuan untuk mengevaluasi kemungkinan gejala Long COVID dan memberikan rekomendasi tindak lanjut yang sesuai.</p>
+        </header>
+        
+        <form id="screeningForm">
+            <!-- Data Pasien -->
+            <div class="form-section">
+                <h2 class="section-title">Data Pasien</h2>
+                
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap *</label>
+                    <input type="text" id="nama" name="nama" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <label for="jenis_kelamin">Jenis Kelamin *</label>
+                        <select id="jenis_kelamin" name="jenis_kelamin" required>
+                            <option value="">Pilih Jenis Kelamin</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-column">
+                        <label for="tanggal_lahir">Tanggal Lahir *</label>
+                        <input type="date" id="tanggal_lahir" name="tanggal_lahir" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-column">
+                        <label for="telepon">Nomor Telepon *</label>
+                        <input type="tel" id="telepon" name="telepon" required>
+                    </div>
+                    
+                    <div class="form-column">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Informasi Dasar -->
+            <div class="form-section">
+                <h2 class="section-title">Informasi Dasar</h2>
+                
+                <div class="question">
+                    <p class="question-text">1. Apakah Anda pernah terdiagnosis positif COVID-19?</p>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q1" value="Ya" required> Ya
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="Tidak"> Tidak
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="Tidak yakin"> Tidak yakin
+                        </label>
+                    </div>
+                    <span class="domain">Informasi Dasar</span>
+                </div>
+                
+                <div class="question" id="q2-container" style="display: none;">
+                    <p class="question-text">2. Kapan terakhir Anda dinyatakan sembuh dari COVID-19?</p>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q2" value="< 1 bulan"> < 1 bulan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="1–3 bulan"> 1–3 bulan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="> 3 bulan"> > 3 bulan
+                        </label>
+                    </div>
+                    <span class="domain">Informasi Dasar</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">3. Apakah Anda memiliki penyakit penyerta (komorbid)?</p>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q3" value="Ya" required> Ya
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Tidak"> Tidak
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Tidak yakin"> Tidak yakin
+                        </label>
+                    </div>
+                    <span class="domain">Informasi Dasar</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">4. Apakah Anda sudah menerima vaksin COVID-19 lengkap?</p>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q4" value="Ya" required> Ya
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="Tidak"> Tidak
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="Tidak yakin"> Tidak yakin
+                        </label>
+                    </div>
+                    <span class="domain">Informasi Dasar</span>
+                </div>
+            </div>
+            
+            <!-- Gejala Berdasarkan Domain -->
+            <div class="form-section">
+                <h2 class="section-title">Evaluasi Gejala (Skala 0-3)</h2>
+                <p>0 = Tidak ada, 1 = Ringan, 2 = Sedang, 3 = Berat</p>
+                
+                <!-- Respirasi -->
+                <div class="question">
+                    <p class="question-text">5. Seberapa parah sesak napas Anda saat menaiki tangga?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q5" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak ada
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q5" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q5" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q5" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Respirasi</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">6. Apakah Anda mengalami batuk berkepanjangan (>8 minggu)?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q6" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q6" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q6" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q6" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Respirasi</span>
+                </div>
+                
+                <!-- Kardiovaskular -->
+                <div class="question">
+                    <p class="question-text">7. Apakah Anda sering merasa jantung berdebar tanpa sebab jelas?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q7" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q7" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q7" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q7" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Kardiovaskular</span>
+                </div>
+                
+                <!-- Neurologi -->
+                <div class="question">
+                    <p class="question-text">8. Seberapa sering Anda mengalami kesulitan konsentrasi atau 'brain fog'?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q8" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q8" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q8" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q8" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Neurologi</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">9. Seberapa parah sakit kepala yang Anda alami?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q9" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q9" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q9" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q9" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Neurologi</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">10. Apakah Anda mudah pusing atau merasa melayang ketika berdiri lama?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q10" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q10" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q10" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q10" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Neurologi</span>
+                </div>
+                
+                <!-- Psikologis -->
+                <div class="question">
+                    <p class="question-text">11. Seberapa parah cemas atau tegang yang Anda rasakan?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q11" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q11" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q11" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q11" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Psikologis</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">12. Apakah anda merasa sedih atau kehilangan minat yang Anda alami?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q12" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q12" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q12" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q12" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Psikologis</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">13. Apakah anda mengalami gangguan tidur (sulit tidur atau sering terbangun)?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q13" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q13" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q13" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q13" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Psikologis</span>
+                </div>
+                
+                <!-- Gastrointestinal -->
+                <div class="question">
+                    <p class="question-text">14. Apakah Anda mengalami perubahan buang air besar (diare atau konstipasi)?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q14" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q14" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q14" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q14" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Gastrointestinal</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">15. Seberapa parah mual, cepat kenyang, atau nyeri ulu hati yang Anda alami?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q15" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q15" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q15" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q15" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Gastrointestinal</span>
+                </div>
+                
+                <!-- Dermatologi -->
+                <div class="question">
+                    <p class="question-text">16. Apakah anda mengalami kerontokan rambut?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q16" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q16" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q16" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q16" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Dermatologi</span>
+                </div>
+                
+                <!-- THT -->
+                <div class="question">
+                    <p class="question-text">17. Apakah Anda mengalami gangguan penciuman atau pengecapan yang belum membaik?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q17" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q17" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q17" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q17" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">THT</span>
+                </div>
+                
+                <!-- Kelelahan -->
+                <div class="question">
+                    <p class="question-text">18. Apakah Anda masih merasa cepat lelah meskipun sudah istirahat cukup?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q18" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q18" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q18" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q18" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Kelelahan</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">19. Apakah gejala Anda memburuk setelah aktivitas fisik atau mental (post-exertional malaise)?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q19" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q19" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q19" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q19" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Kelelahan/Fungsi</span>
+                </div>
+                
+                <div class="question">
+                    <p class="question-text">20. Apakah kemampuan Anda untuk bekerja atau belajar menurun dibanding sebelum COVID-19?</p>
+                    <div class="scale-options">
+                        <label class="scale-label">
+                            <input type="radio" name="q20" value="0" required>
+                            <span class="scale-value">0</span>
+                            Tidak
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q20" value="1">
+                            <span class="scale-value">1</span>
+                            Ringan
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q20" value="2">
+                            <span class="scale-value">2</span>
+                            Sedang
+                        </label>
+                        <label class="scale-label">
+                            <input type="radio" name="q20" value="3">
+                            <span class="scale-value">3</span>
+                            Berat
+                        </label>
+                    </div>
+                    <span class="domain">Kelelahan/Fungsi</span>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Menyimpan data dan menghitung hasil...</p>
+            </div>
+            
+            <button type="submit" id="submitBtn">Hitung Skor dan Rekomendasi</button>
+        </form>
+        
+        <!-- Hasil Skrining -->
+        <div class="results" id="results">
+            <h2 class="results-title">Hasil Skrining Long COVID</h2>
+            
+            <!-- Informasi Pasien -->
+            <div class="patient-info">
+                <h3>Data Pasien</h3>
+                <div class="patient-details" id="patientDetails">
+                    <!-- Data pasien akan diisi oleh JavaScript -->
+                </div>
+            </div>
+            
+            <div class="score-section">
+                <p>Total Skor Gejala:</p>
+                <div class="total-score" id="totalScore">0</div>
+            </div>
+            
+            <div class="interpretation" id="interpretation">
+                <!-- Interpretasi akan diisi oleh JavaScript -->
+            </div>
+            
+            <div class="recommendations" id="recommendations">
+                <!-- Rekomendasi akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Ganti URL_DEPLOYMENT dengan URL deployment Google Apps Script Anda
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwysxaE8PSun3a81I_RxceToI-Mp4qE_bNMvy1W1OwRMthXqMl724gey-7J4xuWQQejLg/exec';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set tanggal maksimum untuk tanggal lahir (hari ini)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tanggal_lahir').setAttribute('max', today);
+            
+            // Tampilkan pertanyaan 2 hanya jika pernah positif COVID-19
+            const q1Inputs = document.querySelectorAll('input[name="q1"]');
+            const q2Container = document.getElementById('q2-container');
+            
+            q1Inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.value === 'Ya') {
+                        q2Container.style.display = 'block';
+                    } else {
+                        q2Container.style.display = 'none';
+                        // Reset pilihan q2 jika disembunyikan
+                        document.querySelectorAll('input[name="q2"]').forEach(radio => {
+                            radio.checked = false;
+                        });
+                    }
+                });
+            });
+            
+            // Handle form submission
+            document.getElementById('screeningForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm();
+            });
+        });
+        
+        async function submitForm() {
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            
+            // Tampilkan loading dan nonaktifkan tombol
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            
+            try {
+                // Kumpulkan data form
+                const formData = collectFormData();
+                
+                // Validasi data
+                if (!validateFormData(formData)) {
+                    throw new Error('Silakan lengkapi semua field yang wajib diisi');
+                }
+                
+                // Kirim data ke Google Apps Script
+                const response = await saveToGoogleSheets(formData);
+                
+                if (response.success) {
+                    // Tampilkan hasil
+                    displayResults(formData, response.data);
+                    showSuccessMessage('Data berhasil disimpan ke database');
+                } else {
+                    throw new Error(response.error || 'Gagal menyimpan data');
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+                console.error('Error:', error);
+            } finally {
+                // Sembunyikan loading dan aktifkan tombol
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        function collectFormData() {
+            const formData = {
+                // Data Pasien
+                nama: document.getElementById('nama').value,
+                jenis_kelamin: document.getElementById('jenis_kelamin').value,
+                tanggal_lahir: document.getElementById('tanggal_lahir').value,
+                telepon: document.getElementById('telepon').value,
+                email: document.getElementById('email').value || '',
+                
+                // Informasi Dasar
+                q1: document.querySelector('input[name="q1"]:checked')?.value || '',
+                q2: document.querySelector('input[name="q2"]:checked')?.value || '',
+                q3: document.querySelector('input[name="q3"]:checked')?.value || '',
+                q4: document.querySelector('input[name="q4"]:checked')?.value || '',
+                
+                // Gejala (Pertanyaan 5-20)
+                gejala: {}
+            };
+            
+            // Kumpulkan jawaban gejala (pertanyaan 5-20)
+            for (let i = 5; i <= 20; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                formData.gejala[`q${i}`] = selectedOption ? parseInt(selectedOption.value) : 0;
+            }
+            
+            // Tambahkan timestamp
+            formData.timestamp = new Date().toISOString();
+            
+            return formData;
+        }
+        
+        function validateFormData(formData) {
+            // Validasi data pasien
+            if (!formData.nama || !formData.jenis_kelamin || !formData.tanggal_lahir || !formData.telepon) {
+                return false;
+            }
+            
+            // Validasi informasi dasar
+            if (!formData.q1 || !formData.q3 || !formData.q4) {
+                return false;
+            }
+            
+            // Jika pernah COVID-19, validasi pertanyaan 2
+            if (formData.q1 === 'Ya' && !formData.q2) {
+                return false;
+            }
+            
+            // Validasi semua gejala telah diisi
+            for (let i = 5; i <= 20; i++) {
+                if (formData.gejala[`q${i}`] === undefined) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        async function saveToGoogleSheets(formData) {
+         try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('Error saving to Google Sheets:', error);
+                throw error;
+            }
+        }
+        
+        function displayResults(formData, serverData) {
+            // Hitung skor total dari gejala (pertanyaan 5-20)
+            let totalScore = 0;
+            for (let i = 5; i <= 20; i++) {
+                totalScore += formData.gejala[`q${i}`] || 0;
+            }
+            
+            // Identifikasi domain dengan gejala signifikan (skor >= 2 per domain)
+            const domainScores = calculateDomainScores(formData.gejala);
+            const significantDomains = Object.keys(domainScores).filter(domain => domainScores[domain] >= 2);
+            
+            // Tampilkan data pasien
+            displayPatientInfo(formData);
+            
+            // Tampilkan skor total
+            document.getElementById('totalScore').textContent = totalScore;
+            
+            // Tentukan interpretasi berdasarkan skor total
+            let interpretation = '';
+            let baseRecommendation = '';
+            
+            if (totalScore === 0) {
+                interpretation = '<p><strong>Tidak ada indikasi Long COVID</strong></p><p>Berdasarkan skrining ini, Anda tidak menunjukkan gejala yang mengindikasikan Long COVID.</p>';
+                baseRecommendation = '<p><strong>Rekomendasi:</strong> Lanjutkan gaya hidup sehat dan pantau kondisi kesehatan Anda secara berkala.</p>';
+            } else if (totalScore <= 10) {
+                interpretation = '<p><strong>Kemungkinan Long COVID</strong></p><p>Anda menunjukkan beberapa gejala yang mungkin terkait dengan Long COVID.</p>';
+                baseRecommendation = '<p><strong>Rekomendasi:</strong> Pantau gejala dan tingkatkan gaya hidup sehat. Jika gejala menetap lebih dari 2 bulan, pertimbangkan untuk berkonsultasi dengan dokter umum.</p>';
+            } else if (totalScore <= 20) {
+                interpretation = '<p><strong>Kemungkinan Long COVID dan membutuhkan pemeriksaan</strong></p><p>Anda menunjukkan beberapa gejala yang signifikan yang mungkin terkait dengan Long COVID.</p>';
+                baseRecommendation = '<p><strong>Rekomendasi:</strong> Pantau gejala dan konsultasi dengan dokter umum bila gejala menetap > 2 bulan.</p>';
+            } else {
+                interpretation = '<p><strong>Kemungkinan Long COVID membutuhkan pemeriksaan lanjut</strong></p><p>Anda menunjukkan banyak gejala yang signifikan yang mungkin terkait dengan Long COVID.</p>';
+                baseRecommendation = '<p><strong>Rekomendasi:</strong> Disarankan untuk berkonsultasi dengan klinik Long COVID atau tim multidisiplin (Paru, Saraf, Psikiatri, Rehabilitasi).</p>';
+            }
+            
+            // Tambahkan konteks dari informasi dasar
+            let contextNotes = '';
+            
+            if (formData.q2) {
+                if (formData.q2 === '< 1 bulan') {
+                    contextNotes += '<div class="warning-message"><strong>Catatan:</strong> Gejala muncul dalam 1 bulan setelah kesembuhan - pantau perkembangan dan konsultasikan jika gejala menetap lebih dari 2 bulan.</div>';
+                } else if (formData.q2 === '1–3 bulan') {
+                    contextNotes += '<p><em>Durasi gejala sesuai kriteria Long COVID (≥ 2 bulan)</em></p>';
+                }
+            }
+            
+            if (formData.q3 === 'Ya') {
+                contextNotes += '<div class="recommendation-item"><strong>Penting:</strong> Gejala mungkin dipengaruhi oleh penyakit penyerta yang sudah ada. Diskusikan dengan dokter mengenai pengelolaan kondisi yang komprehensif.</div>';
+            }
+            
+            if (formData.q4 === 'Tidak') {
+                contextNotes += '<div class="recommendation-item"><strong>Saran:</strong> Pertimbangkan untuk melengkapi vaksinasi COVID-19 sesuai rekomendasi tenaga kesehatan.</div>';
+            }
+            
+            // Gabungkan interpretasi dengan konteks
+            document.getElementById('interpretation').innerHTML = interpretation + contextNotes;
+            
+            // Buat rekomendasi berdasarkan domain yang terpengaruh
+            let recommendations = baseRecommendation;
+            
+            if (significantDomains.length > 0) {
+                recommendations += '<h3>Rekomendasi Berdasarkan Gejala Spesifik:</h3>';
+                
+                significantDomains.forEach(domain => {
+                    let domainRecommendation = '';
+                    let specialist = '';
+                    
+                    switch(domain) {
+                        case 'Respirasi':
+                            domainRecommendation = 'Foto toraks, spirometri';
+                            specialist = 'Sp. Paru';
+                            break;
+                        case 'Kardiovaskular':
+                            domainRecommendation = 'EKG, troponin, echocardiography';
+                            specialist = 'Sp. Jantung';
+                            break;
+                        case 'Neurologi':
+                            domainRecommendation = 'Uji neuropsikologi, pemeriksaan neurologis';
+                            specialist = 'Sp. Saraf';
+                            break;
+                        case 'Psikologis':
+                            domainRecommendation = 'Tes PHQ-9/GAD-7, evaluasi gangguan tidur';
+                            specialist = 'Sp. Psikiatri';
+                            break;
+                        case 'Gastrointestinal':
+                            domainRecommendation = 'USG abdomen, pemeriksaan feses, endoskopi bila perlu';
+                            specialist = 'Sp. Penyakit Dalam (Gastro)';
+                            break;
+                        case 'Kelelahan':
+                            domainRecommendation = 'Panel lab dasar (CBC, TSH, CRP), 6MWT';
+                            specialist = 'Rehabilitasi Medik';
+                            break;
+                        case 'Dermatologi':
+                            domainRecommendation = 'Evaluasi dermatologis untuk kerontokan rambut';
+                            specialist = 'Sp. Kulit';
+                            break;
+                        case 'THT':
+                            domainRecommendation = 'Evaluasi gangguan penciuman dan pengecapan';
+                            specialist = 'Sp. THT';
+                            break;
+                    }
+                    
+                    recommendations += `
+                        <div class="recommendation-item domain-recommendation">
+                            <strong>${domain}:</strong> ${domainRecommendation}
+                            <div class="specialist-referral">Rujuk ke: ${specialist}</div>
+                        </div>`;
+                });
+            }
+            
+            document.getElementById('recommendations').innerHTML = recommendations;
+            document.getElementById('results').style.display = 'block';
+            
+            // Scroll ke hasil
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function calculateDomainScores(gejala) {
+            return {
+                'Respirasi': (gejala.q5 || 0) + (gejala.q6 || 0),
+                'Kardiovaskular': (gejala.q7 || 0),
+                'Neurologi': (gejala.q8 || 0) + (gejala.q9 || 0) + (gejala.q10 || 0),
+                'Psikologis': (gejala.q11 || 0) + (gejala.q12 || 0) + (gejala.q13 || 0),
+                'Gastrointestinal': (gejala.q14 || 0) + (gejala.q15 || 0),
+                'Dermatologi': (gejala.q16 || 0),
+                'THT': (gejala.q17 || 0),
+                'Kelelahan': (gejala.q18 || 0) + (gejala.q19 || 0) + (gejala.q20 || 0)
+            };
+        }
+        
+        function displayPatientInfo(formData) {
+            // Format tanggal lahir
+            const formattedDate = new Date(formData.tanggal_lahir).toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Hitung usia
+            const today = new Date();
+            const birthDate = new Date(formData.tanggal_lahir);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            const patientDetails = `
+                <div class="patient-detail">
+                    <span class="detail-label">Nama Lengkap</span>
+                    <span class="detail-value">${formData.nama}</span>
+                </div>
+                <div class="patient-detail">
+                    <span class="detail-label">Jenis Kelamin</span>
+                    <span class="detail-value">${formData.jenis_kelamin}</span>
+                </div>
+                <div class="patient-detail">
+                    <span class="detail-label">Tanggal Lahir</span>
+                    <span class="detail-value">${formattedDate} (${age} tahun)</span>
+                </div>
+                <div class="patient-detail">
+                    <span class="detail-label">Nomor Telepon</span>
+                    <span class="detail-value">${formData.telepon}</span>
+                </div>
+                <div class="patient-detail">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value">${formData.email || 'Tidak diisi'}</span>
+                </div>
+            `;
+            
+            document.getElementById('patientDetails').innerHTML = patientDetails;
+        }
+        
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = `<strong>Berhasil!</strong> ${message}`;
+            
+            const results = document.getElementById('results');
+            results.insertBefore(successDiv, results.firstChild);
+        }
+    </script>
+</body>
+</html>
